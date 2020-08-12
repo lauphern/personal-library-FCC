@@ -18,8 +18,21 @@ module.exports = function (app) {
 
   app.route('/api/books')
     .get(function (req, res){
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .find({})
+            .toArray()
+            .then(docArr => {
+              res.json(docArr);
+            })
+            .catch(err => {
+              res.status(500).send("Something went wrong! No books were found");
+              throw new Error("No books were found");
+            });
+        }
+      });
     })
     
     .post(function (req, res){
