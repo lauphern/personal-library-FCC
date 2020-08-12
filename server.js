@@ -3,6 +3,7 @@
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
+const nocache = require("nocache");
 
 if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
@@ -11,6 +12,8 @@ const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
 const app = express();
+
+app.use(nocache());
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
