@@ -24,11 +24,16 @@ module.exports = function (app) {
     
     .post(function (req, res){
       const title = req.body.title;
+      let newBook = {
+        title,
+        commentcount: 0,
+        comments: []
+      }
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
         else {
           db.collection("books")
-            .insertOne({title})
+            .insertOne(newBook)
             .then(doc => {
               return db
                 .collection("books")
