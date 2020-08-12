@@ -4,6 +4,7 @@ const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
 const nocache = require("nocache");
+const helmet = require("helmet");
 
 if (process.env.NODE_ENV !== "production") require("dotenv").config();
 
@@ -14,6 +15,7 @@ const runner            = require('./test-runner');
 const app = express();
 
 app.use(nocache());
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
