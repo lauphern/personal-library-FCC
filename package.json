@@ -4,7 +4,9 @@
 	"description": "boilerplate",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "node server.js",
+		"dev": "npx nodemon server.js",
+		"debug": "npx nodemon --inspect server.js"
 	},
 	"dependencies": {
 		"express": "^4.14.0",
