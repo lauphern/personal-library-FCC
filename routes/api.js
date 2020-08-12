@@ -24,7 +24,25 @@ module.exports = function (app) {
     
     .post(function (req, res){
       const title = req.body.title;
-      //response will contain new book object including atleast _id and title
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .insertOne({title})
+            .then(doc => {
+              return db
+                .collection("books")
+                .findOne({ _id: doc.insertedId })
+                .then(doc => {
+                  res.json(doc);
+                });
+            })
+            .catch(err => {
+              res.status(500).send("Something went wrong! The book couldn't be created");
+              throw new Error("Couldn't create the book");
+            });
+        }
+      });
     })
     
     .delete(function(req, res){
