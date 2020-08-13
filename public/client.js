@@ -73,10 +73,22 @@ $( document ).ready(function() {
     $.ajax({
       url: '/api/books',
       type: 'delete',
-      dataType: 'json',
+      dataType: 'text',
       data: $('#newBookForm').serialize(),
       success: function(data) {
-        //update list
+        if(data === "Something went wrong! The books couldn't be deleted") {
+          $('<p/>', {
+            'class': 'error',
+            html: data
+            }).appendTo('#sampleui');
+        } else {
+          $('<p/>', {
+            html: data
+            }).appendTo('#sampleui');
+          $('.listWrapper').first().html("");
+          $('#bookDetail').html(`<p id='detailTitle'>Select a book to see it's details and comments</p>
+          <ol id='detailComments'></ol>`)
+        }
       }
     });
   }); 

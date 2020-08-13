@@ -27,3 +27,7 @@ form {
 .bookItem {
   cursor: pointer;
 }
+
+.error {
+  color: red;
+}
