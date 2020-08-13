@@ -81,7 +81,7 @@ module.exports = function (app) {
               res.json(doc);
             })
             .catch(err => {
-              res.status(500).send("Something went wrong! That book wasn't found");
+              res.send("no book exists");
               throw new Error("No books were found");
             });
         }
