@@ -37,6 +37,10 @@ module.exports = function (app) {
 
     .post(function (req, res) {
       const title = req.body.title;
+      if(!title) {
+        res.status(500).send("Please provide a title");
+        throw new Error("No title sent");
+      }
       let newBook = {
         title,
         commentcount: 0,
