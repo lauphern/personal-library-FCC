@@ -64,7 +64,21 @@ module.exports = function (app) {
     })
 
     .delete(function (req, res) {
-      //if successful response will be 'complete delete successful'
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .drop()
+            .then(result => {
+              if(result) res.send("complete delete successful");
+              else throw new Error();
+            })
+            .catch(err => {
+              res.send("Something went wrong! The books couldn't be deleted");
+              throw new Error("The book collection wasn't dropped");
+            });
+        }
+      });
     });
 
   app
