@@ -71,8 +71,22 @@ module.exports = function (app) {
 
   app.route('/api/books/:id')
     .get(function (req, res){
-      const bookid = req.params.id;
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      const bookid = new ObjectId(req.params.id);
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .findOne({_id: bookid})
+            .then(doc => {
+              if(!doc) throw new Error();
+              res.json(doc);
+            })
+            .catch(err => {
+              res.status(500).send("Something went wrong! That book wasn't found");
+              throw new Error("No books were found");
+            });
+        }
+      });
     })
     
     .post(function(req, res){

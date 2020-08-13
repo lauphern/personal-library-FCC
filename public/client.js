@@ -3,7 +3,6 @@ $( document ).ready(function() {
   var itemsRaw = [];
   
   $.getJSON('/api/books', function(data) {
-    //var items = [];
     itemsRaw = data;
     $.each(data, function(i, val) {
       items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
