@@ -11,7 +11,7 @@ $( document ).ready(function() {
       return ( i !== 14 );
     });
     if (items.length >= 15) {
-      items.push('<p>...and '+ (data.length - 15)+' more!</p>');
+      items.push('<p>...and '+ (itemsRaw.length - 15)+' more!</p>');
     }
   };
 

@@ -87,7 +87,7 @@ module.exports = function (app) {
 
   app
     .route("/api/books/:id")
-    .get(function (req, res) {
+    .get(function (req, res, next) {
       const bookid = new ObjectId(req.params.id);
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
@@ -100,7 +100,6 @@ module.exports = function (app) {
             })
             .catch(err => {
               res.send("no book exists");
-              throw new Error("No books were found");
             });
         }
       });
