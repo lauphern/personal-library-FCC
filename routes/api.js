@@ -90,9 +90,23 @@ module.exports = function (app) {
     })
     
     .post(function(req, res){
-      const bookid = req.params.id;
+      const bookid = new ObjectId(req.params.id);
       const comment = req.body.comment;
-      //json res format same as .get
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .findOneAndUpdate({_id: bookid}, {$inc: {commentcount: 1}, $push: {comments: comment}}, {returnOriginal: false})
+            .then(result => {
+              if(!result.lastErrorObject.updatedExisting) throw new Error();
+              res.json(result.value);
+            })
+            .catch(err => {
+              res.status(500).send("Something went wrong! That book wasn't updated");
+              throw new Error("No books were updated");
+            });
+        }
+      });
     })
     
     .delete(function(req, res){
