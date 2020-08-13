@@ -1,23 +1,23 @@
 /*
-*
-*
-*       Complete the API routing below
-*       
-*       
-*/
+ *
+ *
+ *       Complete the API routing below
+ *
+ *
+ */
 
-'use strict';
+"use strict";
 
-const expect = require('chai').expect;
-const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectId;
+const expect = require("chai").expect;
+const MongoClient = require("mongodb").MongoClient;
+const ObjectId = require("mongodb").ObjectId;
 const MONGODB_CONNECTION_STRING = process.env.DB;
 //Example connection: MongoClient.connect(MONGODB_CONNECTION_STRING, function(err, db) {});
 
 module.exports = function (app) {
-
-  app.route('/api/books')
-    .get(function (req, res){
+  app
+    .route("/api/books")
+    .get(function (req, res) {
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
         else {
@@ -34,14 +34,14 @@ module.exports = function (app) {
         }
       });
     })
-    
-    .post(function (req, res){
+
+    .post(function (req, res) {
       const title = req.body.title;
       let newBook = {
         title,
         commentcount: 0,
-        comments: []
-      }
+        comments: [],
+      };
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
         else {
@@ -62,23 +62,22 @@ module.exports = function (app) {
         }
       });
     })
-    
-    .delete(function(req, res){
+
+    .delete(function (req, res) {
       //if successful response will be 'complete delete successful'
     });
 
-
-
-  app.route('/api/books/:id')
-    .get(function (req, res){
+  app
+    .route("/api/books/:id")
+    .get(function (req, res) {
       const bookid = new ObjectId(req.params.id);
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
         else {
           db.collection("books")
-            .findOne({_id: bookid})
+            .findOne({ _id: bookid })
             .then(doc => {
-              if(!doc) throw new Error();
+              if (!doc) throw new Error();
               res.json(doc);
             })
             .catch(err => {
@@ -88,17 +87,21 @@ module.exports = function (app) {
         }
       });
     })
-    
-    .post(function(req, res){
+
+    .post(function (req, res) {
       const bookid = new ObjectId(req.params.id);
       const comment = req.body.comment;
       MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
         if (err) throw new Error("Couldn't connect to the database");
         else {
           db.collection("books")
-            .findOneAndUpdate({_id: bookid}, {$inc: {commentcount: 1}, $push: {comments: comment}}, {returnOriginal: false})
+            .findOneAndUpdate(
+              { _id: bookid },
+              { $inc: { commentcount: 1 }, $push: { comments: comment } },
+              { returnOriginal: false }
+            )
             .then(result => {
-              if(!result.lastErrorObject.updatedExisting) throw new Error();
+              if (!result.lastErrorObject.updatedExisting) throw new Error();
               res.json(result.value);
             })
             .catch(err => {
@@ -108,10 +111,23 @@ module.exports = function (app) {
         }
       });
     })
-    
-    .delete(function(req, res){
-      const bookid = req.params.id;
-      //if successful response will be 'delete successful'
+
+    .delete(function (req, res) {
+      const bookid = new ObjectId(req.params.id);
+      MongoClient.connect(MONGODB_CONNECTION_STRING, (err, db) => {
+        if (err) throw new Error("Couldn't connect to the database");
+        else {
+          db.collection("books")
+            .findOneAndDelete({ _id: bookid })
+            .then(result => {
+              if (!result.value) throw new Error();
+              res.send("delete successful");
+            })
+            .catch(err => {
+              res.send("Something went wrong! That book wasn't updated");
+              throw new Error("No books were updated");
+            });
+        }
+      });
     });
-  
 };
