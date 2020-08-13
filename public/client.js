@@ -2,16 +2,22 @@ $( document ).ready(function() {
   var items = [];
   var itemsRaw = [];
 
-  const displayList = (data) => {
-    itemsRaw = data;
-    debugger
-    $.each(data, function(i, val) {
+  const updateItems = ({bookId, newBook}) => {
+    if(newBook) itemsRaw.push(newBook);
+    if(bookId) itemsRaw = itemsRaw.filter(obj => obj._id != bookId);
+    items = [];
+    $.each(itemsRaw, function(i, val) {
       items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
       return ( i !== 14 );
     });
     if (items.length >= 15) {
       items.push('<p>...and '+ (data.length - 15)+' more!</p>');
     }
+  };
+
+  const displayList = ({bookId, newBook}) => {
+    emptyList();
+    updateItems({bookId, newBook});
     $('<ul/>', {
       'class': 'listWrapper',
       html: items.join('')
@@ -19,13 +25,14 @@ $( document ).ready(function() {
   }
 
   const emptyList = () => {
-    $('.listWrapper').first().html("");
+    $('#display').html("");
     $('#bookDetail').html(`<p id='detailTitle'>Select a book to see it's details and comments</p>
     <ol id='detailComments'></ol>`)
   }
   
   $.getJSON('/api/books', function(data) {
-    displayList(data)
+    itemsRaw = data;
+    displayList({});
   });
   
   var comments = [];
@@ -50,10 +57,8 @@ $( document ).ready(function() {
       type: 'delete',
       success: function(data) {
         //update list
-        $('#detailComments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
-        let filteredArray = itemsRaw.filter(obj => obj._id != bookId);
-        emptyList();
-        displayList(filteredArray);
+        displayList({bookId});
+        $('#detailComments').html('<p class="success">'+data+'<p><p>Refresh the page</p>');
       }
     });
   });  
@@ -72,14 +77,15 @@ $( document ).ready(function() {
     });
   });
   
-  $('#newBook').click(function() {
+  $('#newBook').click(function(e) {
+    e.preventDefault();
     $.ajax({
       url: '/api/books',
       type: 'post',
       dataType: 'json',
       data: $('#newBookForm').serialize(),
       success: function(data) {
-        //update list
+        displayList({newBook: data});
       }
     });
   });
@@ -98,6 +104,7 @@ $( document ).ready(function() {
             }).appendTo('#sampleui');
         } else {
           $('<p/>', {
+            'class': 'success',
             html: data
             }).appendTo('#sampleui');
           emptyList()
