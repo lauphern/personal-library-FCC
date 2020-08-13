@@ -4,6 +4,7 @@ $( document ).ready(function() {
 
   const displayList = (data) => {
     itemsRaw = data;
+    debugger
     $.each(data, function(i, val) {
       items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
       return ( i !== 14 );
@@ -15,6 +16,12 @@ $( document ).ready(function() {
       'class': 'listWrapper',
       html: items.join('')
       }).appendTo('#display');
+  }
+
+  const emptyList = () => {
+    $('.listWrapper').first().html("");
+    $('#bookDetail').html(`<p id='detailTitle'>Select a book to see it's details and comments</p>
+    <ol id='detailComments'></ol>`)
   }
   
   $.getJSON('/api/books', function(data) {
@@ -45,8 +52,8 @@ $( document ).ready(function() {
         //update list
         $('#detailComments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
         let filteredArray = itemsRaw.filter(obj => obj._id != bookId);
-        itemsRaw = filteredArray;
-        $("#detailTitle").html('<b>'+itemsRaw[this.id].title+'</b> (id: '+itemsRaw[this.id]._id+')');
+        emptyList();
+        displayList(filteredArray);
       }
     });
   });  
@@ -93,9 +100,7 @@ $( document ).ready(function() {
           $('<p/>', {
             html: data
             }).appendTo('#sampleui');
-          $('.listWrapper').first().html("");
-          $('#bookDetail').html(`<p id='detailTitle'>Select a book to see it's details and comments</p>
-          <ol id='detailComments'></ol>`)
+          emptyList()
         }
       }
     });
