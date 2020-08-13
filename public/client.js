@@ -107,7 +107,9 @@ $( document ).ready(function() {
             'class': 'success',
             html: data
             }).appendTo('#sampleui');
-          emptyList()
+          emptyList();
+          items = [];
+          itemsRaw = [];
         }
       }
     });
