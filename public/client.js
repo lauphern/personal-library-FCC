@@ -1,8 +1,8 @@
 $( document ).ready(function() {
   var items = [];
   var itemsRaw = [];
-  
-  $.getJSON('/api/books', function(data) {
+
+  const displayList = (data) => {
     itemsRaw = data;
     $.each(data, function(i, val) {
       items.push('<li class="bookItem" id="' + i + '">' + val.title + ' - ' + val.commentcount + ' comments</li>');
@@ -15,6 +15,10 @@ $( document ).ready(function() {
       'class': 'listWrapper',
       html: items.join('')
       }).appendTo('#display');
+  }
+  
+  $.getJSON('/api/books', function(data) {
+    displayList(data)
   });
   
   var comments = [];
@@ -33,12 +37,16 @@ $( document ).ready(function() {
   });
   
   $('#bookDetail').on('click','button.deleteBook',function() {
+    const bookId = this.id;
     $.ajax({
       url: '/api/books/'+this.id,
       type: 'delete',
       success: function(data) {
         //update list
         $('#detailComments').html('<p style="color: red;">'+data+'<p><p>Refresh the page</p>');
+        let filteredArray = itemsRaw.filter(obj => obj._id != bookId);
+        itemsRaw = filteredArray;
+        $("#detailTitle").html('<b>'+itemsRaw[this.id].title+'</b> (id: '+itemsRaw[this.id]._id+')');
       }
     });
   });  
